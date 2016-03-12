@@ -39,17 +39,4 @@ public class TextEncryption {
         return key;
     }
 
-    public static String getFileExtension(String fileName) {
-        String ext = "";
-        int mode = 0;
-        for(int i = 0; i < fileName.length(); i ++){
-            if(mode == 0 && fileName.charAt(i) == '.'){
-                mode = 1;
-            }
-            else if (mode == 1){
-                ext += fileName.charAt(i);
-            }
-        }
-        return ext;
-    }
 }

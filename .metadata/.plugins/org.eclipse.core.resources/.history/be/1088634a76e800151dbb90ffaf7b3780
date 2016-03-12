@@ -1,0 +1,15 @@
+import java.io.File;
+
+public class TestImage {
+	public static void main(String[] argv){
+		Image img1 = new Image("unionjack.jpg");
+		img1.addText("love");
+		File f1 = img1.getFile("unionjack.jpg");
+		
+		Image img1test = new Image(f1.getName());
+		String text = img1test.getText();
+		System.out.println(text);
+
+		
+	}
+}

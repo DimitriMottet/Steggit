@@ -1,0 +1,19 @@
+
+public class ImageX {
+	private Image initialImage;
+	private String encryptedText;
+	private Image processedImage;
+	
+	public ImageX(Image img, String encryptedTxt){
+		this.initialImage=img;
+		this.encryptedText=encryptedTxt;
+		this.processedImage = addTextToImage(img,encryptedTxt);
+	}
+
+	private Image addTextToImage(Image img, String encryptedTxt) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+}

@@ -1,0 +1,20 @@
+
+public class GeneralTest {
+	
+	String s = "LOVE";
+	String k = "ThisIsTheKey";
+	
+	// Encrypt Text
+	byte encryptedB[] = Text.encrypt(s,k);
+	String encryptedS = encryptedB.toString();
+	System.out.println("Encrypted message: "+encryptedS);
+	
+	// Add it to the photo
+	
+	
+	// Get the text from the photo
+	
+	// Decrypt the text
+	
+	
+}

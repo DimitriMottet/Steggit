@@ -1,0 +1,13 @@
+import java.io.File;
+
+
+public class TestImage {
+	public static void main(String[] argv){
+		new File("/Hack/unionjack.jpg");
+		Image img1 = new Image(new File("/Hack/unionjack.jpg"));
+		img1.addText("love");
+		String text = img1.getText();
+		System.out.println(text);
+		
+	}
+}

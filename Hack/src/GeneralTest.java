@@ -6,7 +6,7 @@ public class GeneralTest {
 	public static void main (String[] argv){
 	
 	String s = "LOVE";
-	String k = "ThisIsTheKey";
+	String k = "ThisIsTheKeykkkk";
 	
 	
 	// Encrypt Text

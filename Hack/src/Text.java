@@ -56,7 +56,6 @@ public class Text
 				e1.printStackTrace();
 				return null;
 			}
-	    	return null;
 	    }catch (Exception e1) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();

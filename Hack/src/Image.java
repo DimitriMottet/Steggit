@@ -123,8 +123,9 @@ public class Image {
 	
 	/** Save a new image file
 	 */
-	public File getFile(){
-		File outputfile = new File(filename);
+	public File getFile(String s){
+		File outputfile = new File(s);
+		outputfile.delete();
 		try {
 			ImageIO.write(image, extension, outputfile);
 		} catch (IOException e) {

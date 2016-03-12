@@ -2,18 +2,19 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 
 public class Image {
 	BufferedImage image;
+	String filename;
+	String extension;
 	
-	public Image(BufferedImage img){
-		this.image=img;
-	}
-	
-	public Image(File f){
+	public Image(String filename){
+		File f = new File(filename);
 		BufferedImage image	= null;
 		try{
 			image = ImageIO.read(f);
@@ -21,8 +22,11 @@ public class Image {
 			JOptionPane.showMessageDialog(null,"Image could not be read!","Error",JOptionPane.ERROR_MESSAGE);
 		}
 		this.image=image;
+		this.filename=filename;
+		this.extension=Text.getFileExtension(filename);
 	}
-	
+
+
 	/** Add text to the buffered image
 	 * @param s
 	 */
@@ -116,5 +120,16 @@ public class Image {
 		byte byte0 = (byte)((i & 0x000000FF)       );
 		return(new byte[]{byte3,byte2,byte1,byte0});
 	}
-		
+	
+	/** Save a new image file
+	 */
+	public File getFile(){
+		File outputfile = new File(filename);
+		try {
+			ImageIO.write(image, extension, outputfile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return outputfile;
+	}
 }

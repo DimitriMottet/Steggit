@@ -1,10 +1,7 @@
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -37,21 +34,12 @@ public class Image {
 		
 		// Add the text
 		try{
-			img = addBytes(img,length,0); // 0 = first position
-			img = addBytes(img,text,32); //  4 bytes of space for length: 4bytes*8bit = 32 bits
+			addBytes(img,length,0); // 0 = first position
+			addBytes(img,text,32); //  4 bytes of space for length: 4bytes*8bit = 32 bits
 		}
 		catch(Exception e){
 			JOptionPane.showMessageDialog(null,"Target File cannot hold message!", "Error",JOptionPane.ERROR_MESSAGE);
 		}
-		
-		// Convert to BufferedImage
-	    ByteArrayInputStream bais = new ByteArrayInputStream(img);
-	    try{
-	        BufferedImage bImg=ImageIO.read(bais);
-	        this.image=bImg;
-	    }catch (IOException e){
-	        throw new RuntimeException(e);
-	    }
 	    
 	}
 	
@@ -112,9 +100,9 @@ public class Image {
 	 * @return
 	 */
 	private byte[] getBytesFromBufferedImage(){
-		WritableRaster raster   = this.image.getRaster();
+		WritableRaster raster = image.getRaster();
 		DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
-		return buffer.getData();	
+		return buffer.getData();
 	}
 	
 	/** Convert an integer into bytes

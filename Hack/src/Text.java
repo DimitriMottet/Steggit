@@ -19,29 +19,48 @@ public class Text
 	}
 	
 
-	public static byte[] encrypt(String valueToEnc, String stringKey) throws Exception {
-	    Key key = generateKey(stringKey);
-	    Cipher c = Cipher.getInstance("AES");
-	    c.init(Cipher.ENCRYPT_MODE, key);
-	    byte[] encValue = c.doFinal(valueToEnc.getBytes());
-	    String encryptedValue = new String(encValue, "ASCII");
-	    return encValue;
+	public static byte[] encrypt(String valueToEnc, String stringKey) {
+	    Key key;
+		try {
+			key = generateKey(stringKey);	    
+			Cipher c = Cipher.getInstance("AES");
+			c.init(Cipher.ENCRYPT_MODE, key);
+			byte[] encValue = c.doFinal(valueToEnc.getBytes());
+			String encryptedValue = new String(encValue, "ASCII");
+			return encValue;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 
-	public static String decrypt(byte[] encryptedValue, String stringKey) throws Exception {
-	    Key key = generateKey(stringKey);
-	    Cipher c = Cipher.getInstance("AES");
-	    c.init(Cipher.DECRYPT_MODE, key);
-	    byte[] decordedValue = encryptedValue;
-	    try
-	    {
+	public static String decrypt(byte[] encryptedValue, String stringKey){
+	    Key key;
+		try {
+			key = generateKey(stringKey);	    
+			Cipher c = Cipher.getInstance("AES");
+			c.init(Cipher.DECRYPT_MODE, key);
+			byte[] decordedValue = encryptedValue;
 	    	byte[] decValue = c.doFinal(decordedValue);
 	    	String decryptedValue = new String(decValue);
 		    return decryptedValue;
 	    }
 	    catch(javax.crypto.BadPaddingException e)
 	    {
-	    	throw new Exception("Incorrect Key");
+	    	try {
+				throw new Exception("Incorrect Key");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				return null;
+			}
+	    	return null;
+	    }catch (Exception e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+		return null;
 	    }
 	    
 	    

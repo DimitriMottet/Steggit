@@ -44,8 +44,28 @@ public class Image {
 		catch(Exception e){
 			JOptionPane.showMessageDialog(null,"Target File cannot hold message!", "Error",JOptionPane.ERROR_MESSAGE);
 		}
-	    
 	}
+	
+	/** Add text in bytes to the buffered image
+	 * @param s
+	 */
+	public void addTextBytes(byte[] message){
+		// Convert to byte arrays
+		byte img[] = getBytesFromBufferedImage();
+		byte length[]  = bitConversion(message.length);
+		
+		// Add the text
+		try{
+			addBytes(img,length,0); // 0 = first position
+			addBytes(img,message,32); //  4 bytes of space for length: 4bytes*8bit = 32 bits
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(null,"Target File cannot hold message!", "Error",JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	
+
 	
 	/** Get the text from buffered image
 	 * @return
@@ -54,6 +74,16 @@ public class Image {
 		byte image[] = getBytesFromBufferedImage();
 		byte text[] = getEncodedBytes(image);
 		return new String(text);
+		
+	}
+	
+	/** Get the text in bytes from buffered image
+	 * @return
+	 */
+	public byte[] getTextBytes(){
+		byte image[] = getBytesFromBufferedImage();
+		byte text[] = getEncodedBytes(image);
+		return text;
 		
 	}
 	

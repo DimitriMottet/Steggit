@@ -13,6 +13,9 @@ public class Text
 		System.out.println(encVal);
 		
 		System.out.println(decrypt(encVal, "thisisasecretkey") );
+		
+		System.out.println(getFileExtension("test.poauh"));
+		
 	}
 	
 
@@ -49,6 +52,31 @@ public class Text
 		byte[] keyValue = stringKey.getBytes();
 	    Key key = new SecretKeySpec(keyValue, "AES");
 	    return key;
+	}
+	
+	public static String getFileExtension(String fileName)
+	{
+		
+		String ext = "";
+		int mode = 0;
+		
+		
+		for(int i = 0; i < fileName.length(); i ++)
+		{
+			if(mode == 0 && fileName.charAt(i) == '.')
+			{
+				mode = 1;
+			}
+			else if (mode == 1)
+			{
+				ext += fileName.charAt(i);
+			}
+			
+				
+		}
+		
+		return ext;
+		
 	}
 	
 }

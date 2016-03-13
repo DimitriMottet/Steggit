@@ -81,7 +81,11 @@ public class InsertMessage extends AppCompatActivity {
                     img.addText(encodedText);
                     img.saveFile(addSuffix(filename, "_stegged"));
                     progress.dismiss();
-                    Toast.makeText(InsertMessage.this, "Saved to Pictures folder", Toast.LENGTH_SHORT).show();
+                    InsertMessage.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(InsertMessage.this, "Saved to Pictures folder", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }).start();
         }

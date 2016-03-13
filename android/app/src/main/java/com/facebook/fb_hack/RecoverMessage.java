@@ -1,5 +1,6 @@
 package com.facebook.fb_hack;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 public class RecoverMessage extends AppCompatActivity {
 
     private Uri loadedImageUri;
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +48,30 @@ public class RecoverMessage extends AppCompatActivity {
         if (editPassphrase == null || editPassphrase.getText() == null || editPassphrase.getText().toString().isEmpty()) {
             Toast.makeText(this.getApplicationContext(), "A passphrase is required", Toast.LENGTH_SHORT).show();
         } else {
-            String passphrase = editPassphrase.getText().toString();
-            String filename = getRealPathFromURI(loadedImageUri);
+            progress = ProgressDialog.show(RecoverMessage.this, "De-stegging it", "Please wait...", true);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String passphrase = editPassphrase.getText().toString();
+                    String filename = getRealPathFromURI(loadedImageUri);
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inDither = false;
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            options.inScaled = false;
-            Image img = new Image(BitmapFactory.decodeFile(filename, options));
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inDither = false;
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    options.inScaled = false;
+                    Image img = new Image(BitmapFactory.decodeFile(filename, options));
 
-            byte[] encodedText = img.getText();
-            String plaintext = TextEncryption.decrypt(encodedText, passphrase);
-            editPlainText.setText(plaintext);
+                    byte[] encodedText = img.getText();
+                    final String plaintext = TextEncryption.decrypt(encodedText, passphrase);
+                    editPlainText.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            editPlainText.setText(plaintext);
+                        }
+                    });
+                    progress.dismiss();
+                }
+            }).start();
         }
     }
 

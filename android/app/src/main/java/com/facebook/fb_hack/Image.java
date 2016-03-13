@@ -6,35 +6,24 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class Image {
 
     Bitmap image;
     int width, height;
-    byte imageData[];
+    byte[] imageData;
 
     public Image(Bitmap bitmap) {
-        this.image = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        this.image = bitmap;
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.imageData = new byte[4 * width * height];
-        getBytesFromBitmap();
+        // Copy raw image data to imageData
+        ByteBuffer buffer = ByteBuffer.wrap(imageData);
+        image.copyPixelsToBuffer(buffer);
     }
-/*
-    private String getFileExtension(String fileName) {
-        String ext = "";
-        int mode = 0;
-        for(int i = 0; i < fileName.length(); i ++){
-            if(mode == 0 && fileName.charAt(i) == '.'){
-                mode = 1;
-            }
-            else if (mode == 1){
-                ext += fileName.charAt(i);
-            }
-        }
-        return ext;
-    }
-*/
+
     /** Add text to the buffered image
      */
     public void addText(byte[] text) {
@@ -54,10 +43,14 @@ public class Image {
     /** Save a new image file
      */
     public void saveFile(String filename) {
-        getBitmapFromBytes();
+        // Save raw image data from imageData
+        ByteBuffer buffer = ByteBuffer.wrap(imageData);
+        image.copyPixelsFromBuffer(buffer);
         try {
+            // Save to a file
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filename);
             FileOutputStream out = new FileOutputStream(file);
+            image.setHasAlpha(true);
             if (!image.compress(Bitmap.CompressFormat.PNG, 0, out))
                 System.err.println("Oooops!");
             out.flush();
@@ -101,30 +94,6 @@ public class Image {
             }
         }
         return result;
-    }
-
-    /** Get array of bytes from buffered image
-     */
-    private void getBytesFromBitmap() {
-        int pixels[] = new int[width * height];
-        image.getPixels(pixels, 0, width, 0, 0, width, height);
-        for (int i = 0; i < width * height; i++) {
-            imageData[4*i]   = (byte)((pixels[i] & 0xFF000000) >>> 24);
-            imageData[4*i+1] = (byte)((pixels[i] & 0x00FF0000) >>> 16);
-            imageData[4*i+2] = (byte)((pixels[i] & 0x0000FF00) >>> 8 );
-            imageData[4*i+3] = (byte)((pixels[i] & 0x000000FF)       );
-        }
-    }
-
-    private void getBitmapFromBytes() {
-        int pixels[] = new int[width * height];
-        for (int i = 0; i < width * height; i++) {
-            pixels[i]   = ((imageData[4*i]   & 0xFF) << 24)
-                        | ((imageData[4*i+1] & 0xFF) << 16)
-                        | ((imageData[4*i+2] & 0xFF) << 8 )
-                        | ((imageData[4*i+3] & 0xFF)      );
-        }
-        image.setPixels(pixels, 0, width, 0, 0, width, height);
     }
 
     /** Convert an integer into bytes

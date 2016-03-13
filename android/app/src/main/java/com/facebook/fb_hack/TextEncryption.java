@@ -9,9 +9,8 @@ public class TextEncryption {
 
     public static byte[] encrypt(String valueToEnc, String stringKey) {
         try {
-            Key key = generateKey(stringKey);
+            Key key = generateKey(passwordToKey(stringKey));
             Cipher c = Cipher.getInstance("AES");
-            System.out.println("Antoine");
             c.init(Cipher.ENCRYPT_MODE, key);
             return c.doFinal(valueToEnc.getBytes());
         } catch (Exception e) {
@@ -22,7 +21,7 @@ public class TextEncryption {
 
     public static String decrypt(byte[] encryptedValue, String stringKey) {
         try {
-            Key key = generateKey(stringKey);
+            Key key = generateKey(passwordToKey(stringKey));
             Cipher c = Cipher.getInstance("AES");
             c.init(Cipher.DECRYPT_MODE, key);
             byte[] decValue = c.doFinal(encryptedValue);
@@ -35,6 +34,23 @@ public class TextEncryption {
     private static Key generateKey(String stringKey) throws Exception {
         byte[] keyValue = stringKey.getBytes();
         Key key = new SecretKeySpec(keyValue, "AES");
+        return key;
+    }
+
+    private static String passwordToKey(String password)
+    {
+        String key = password;
+        if (key == "")
+            key = "a";
+        if (key.length() <= 8)
+            key += key;
+        for(int i = key.length(); i < 16; i++) {
+            key = key + key.charAt(key.length() - 1);
+        }
+
+        if (key.length() > 16)
+            key = key.substring(0, 16);
+
         return key;
     }
 

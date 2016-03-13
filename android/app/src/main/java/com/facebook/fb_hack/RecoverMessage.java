@@ -1,6 +1,9 @@
 package com.facebook.fb_hack;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import java.io.IOException;
+import android.widget.Toast;
 
 public class RecoverMessage extends AppCompatActivity {
 
@@ -41,22 +43,36 @@ public class RecoverMessage extends AppCompatActivity {
     private void recoverMessageFromImage() {
         final EditText editPassphrase = (EditText) findViewById(R.id.editPassphrase);
         final EditText editPlainText = (EditText) findViewById(R.id.editPlainText);
-        String passphrase = editPassphrase.getText().toString();
-        passphrase = "kkkkkkkkkkkkkkkk";
+        if (editPassphrase == null || editPassphrase.getText() == null || editPassphrase.getText().toString().isEmpty()) {
+            Toast.makeText(this.getApplicationContext(), "A passphrase is required", Toast.LENGTH_SHORT).show();
+        } else {
+            String passphrase = editPassphrase.getText().toString();
+            String filename = getRealPathFromURI(loadedImageUri);
 
-        try {
-            System.out.println("OK");
-            Image img = new Image(MediaStore.Images.Media.getBitmap(this.getContentResolver(), loadedImageUri));
-            System.out.println("OK");
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inDither = false;
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inScaled = false;
+            Image img = new Image(BitmapFactory.decodeFile(filename, options));
+
             byte[] encodedText = img.getText();
-            System.out.println("OK");
             String plaintext = TextEncryption.decrypt(encodedText, passphrase);
-            System.out.println("OK");
             editPlainText.setText(plaintext);
-            System.out.println("OK");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        if (contentUri.getPath().startsWith("/storage"))
+            return contentUri.getPath();
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, filePathColumn, null, null, null);
+        String realPath = null;
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            realPath = cursor.getString(columnIndex);
+        }
+        cursor.close();
+        return realPath;
     }
 
 }

@@ -62,13 +62,15 @@ public class RecoverMessage extends AppCompatActivity {
                     Image img = new Image(BitmapFactory.decodeFile(filename, options));
 
                     byte[] encodedText = img.getText();
-                    final String plaintext = TextEncryption.decrypt(encodedText, passphrase);
-                    editPlainText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            editPlainText.setText(plaintext);
-                        }
-                    });
+                    if (encodedText != null) {
+                        final String plaintext = TextEncryption.decrypt(encodedText, passphrase);
+                        editPlainText.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                editPlainText.setText(plaintext);
+                            }
+                        });
+                    }
                     progress.dismiss();
                 }
             }).start();

@@ -93,6 +93,9 @@ public class Image {
             length = (length << 1) | (image[i] & 1);
         }
 
+        if (length < 0 || length > 8000)
+            return null;
+
         byte[] result = new byte[length];
         for (int b = 0; b < result.length; ++b) {
             for (int i = 0; i < 8; ++i, ++offset) {

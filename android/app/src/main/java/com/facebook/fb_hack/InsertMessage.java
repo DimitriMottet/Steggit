@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class InsertMessage extends AppCompatActivity {
 
@@ -35,16 +38,24 @@ public class InsertMessage extends AppCompatActivity {
             imgView.setImageURI(loadedImageUri);
         }
 
-        final Button encodeButton = (Button) findViewById(R.id.buttonEncode);
-        encodeButton.setOnClickListener(new View.OnClickListener() {
+        final Button saveButton = (Button) findViewById(R.id.buttonSave);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                encodeMessageOnImage();
-                startShare();
+                encodeMessageAndSave();
+
             }
         });
+
+        final Button shareButton = (Button) findViewById(R.id.buttonShare);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                encodeMessageAndShare();
+            }
+        });
+
     }
 
-    private void encodeMessageOnImage() {
+    private void encodeMessageAndSave() {
         final Context context = this.getApplicationContext();
         final EditText editMessage = (EditText) findViewById(R.id.editMessage);
         final EditText editPassphrase = (EditText) findViewById(R.id.editPassphrase);
@@ -70,22 +81,55 @@ public class InsertMessage extends AppCompatActivity {
 
                     byte[] encodedText = TextEncryption.encrypt(message, passphrase);
                     img.addText(encodedText);
+                    img.saveFile(addSuffix(filename, "_stegged"));
                     progress.dismiss();
-
-                    // Ask what to do with the file
-                    img.saveFile("testfile.png");
                 }
             }).start();
         }
     }
 
     // Launch share message activity
-    private void startShare(){
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, loadedImageUri);
-        shareIntent.setType("image/*");
-        startActivity(Intent.createChooser(shareIntent, "Share to..."));
+    private void encodeMessageAndShare() {
+        final Context context = this.getApplicationContext();
+        final EditText editMessage = (EditText) findViewById(R.id.editMessage);
+        final EditText editPassphrase = (EditText) findViewById(R.id.editPassphrase);
+        if (editMessage == null || editMessage.getText() == null || editMessage.getText().toString().isEmpty()) {
+            Toast.makeText(context, "A text is required", Toast.LENGTH_SHORT).show();
+        } else if (editPassphrase == null || editPassphrase.getText() == null || editPassphrase.getText().toString().isEmpty()) {
+            Toast.makeText(context, "A passphrase is required", Toast.LENGTH_SHORT).show();
+        } else {
+            progress = ProgressDialog.show(InsertMessage.this, "Stegging it", "Please wait...", true);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String message = editMessage.getText().toString();
+                    String passphrase = editPassphrase.getText().toString();
+                    String filename = getRealPathFromURI(loadedImageUri);
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inDither = false;
+                    options.inMutable = true;
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    options.inScaled = false;
+                    Image img = new Image(BitmapFactory.decodeFile(filename, options));
+
+                    byte[] encodedText = TextEncryption.encrypt(message, passphrase);
+                    img.addText(encodedText);
+                    String newFilename = addSuffix(filename, "_stegged");
+                    img.saveFile(newFilename);
+                    progress.dismiss();
+
+                    // Open share menu
+                    Intent shareIntent = new Intent();
+                    Uri uri = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), newFilename));
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                    shareIntent.setType("image/png");
+                    startActivity(Intent.createChooser(shareIntent, "Share to..."));
+
+                }
+            }).start();
+        }
     }
 
     private String getRealPathFromURI(Uri contentUri) {
@@ -100,6 +144,10 @@ public class InsertMessage extends AppCompatActivity {
         }
         cursor.close();
         return realPath;
+    }
+
+    private String addSuffix(String filename, String suffix) {
+        return new String(filename.substring(filename.lastIndexOf('/') + 1, filename.lastIndexOf('.')) + suffix + ".png");
     }
 
 }

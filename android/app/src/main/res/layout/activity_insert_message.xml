@@ -48,6 +48,12 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Encode &amp; Share"
-        android:id="@+id/buttonEncode" />
+        android:text="Save to file"
+        android:id="@+id/buttonSave" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Share"
+        android:id="@+id/buttonShare" />
 </LinearLayout>

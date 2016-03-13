@@ -1,8 +1,12 @@
 package com.facebook.fb_hack;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,7 +63,7 @@ public class Image {
             e.printStackTrace();
         }
     }
-
+    
 
     /** Add bytes to bytes at a certain offset
      */

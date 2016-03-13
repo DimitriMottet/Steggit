@@ -1,0 +1,34 @@
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.io.File;
+
+public class Interface {
+    public static void main(String[] arg) {	
+    	// JFrame
+		JFrame cadre = new javax.swing.JFrame("Premiere fenetre");
+		JPanel panneau = new JPanel();
+		panneau.setPreferredSize(new Dimension(250, 150));
+	
+		panneau.setBackground(Color.WHITE);
+		cadre.setContentPane(panneau);
+		cadre.setLocation(400, 300);
+		cadre.pack();
+		cadre.setVisible(true);
+		cadre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JFileChooser dialogue = new JFileChooser(new File("."));
+		File fichier;
+		
+		//JFile Chooser
+		if (dialogue.showOpenDialog(null)== 
+		    JFileChooser.APPROVE_OPTION) {
+		    fichier = dialogue.getSelectedFile();
+		    System.out.println(fichier.getName());
+		}
+		
+		
+    }
+}

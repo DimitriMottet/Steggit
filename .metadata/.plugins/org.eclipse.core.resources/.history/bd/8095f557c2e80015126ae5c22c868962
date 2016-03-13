@@ -1,0 +1,68 @@
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+public class Interface {
+    public static void main(String[] arg) {	
+    	// JFrame
+		JFrame cadre = new javax.swing.JFrame("Premiere fenetre");
+		cadre.setPreferredSize(new Dimension(500,500));
+		
+		//JPanel
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(5,1));
+		
+		//JFile Chooser
+		BoutonChoose bFileChooser = new BoutonChoose("Upload image");
+		panel.add(bFileChooser);	
+		
+		//Saisie
+		JPanel psaisie = new JPanel();
+		psaisie.setLayout(new GridLayout(1,2));
+		JTextField textKey = new JTextField(16);
+		JLabel textKeyLabel = new JLabel("Key: ");
+		psaisie.add(textKeyLabel);
+		psaisie.add(textKey);
+		panel.add(psaisie);
+		
+		
+		
+		cadre.setContentPane(panel);
+		cadre.setLocation(200, 200);
+		cadre.pack();
+		cadre.setVisible(true);
+		cadre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+
+		
+		
+    }
+    
+
+
+    static class BoutonChoose extends JButton implements ActionListener {
+    	File file = new File("");
+        BoutonChoose(String nom) {
+        	super(nom);
+        	addActionListener(this);
+        }
+        
+        public void actionPerformed(ActionEvent e) {
+    		JFileChooser dialogue = new JFileChooser(new File("."));
+    		if (dialogue.showOpenDialog(null)== JFileChooser.APPROVE_OPTION) {
+    		    file = dialogue.getSelectedFile();
+    		}
+        }
+
+    }
+}

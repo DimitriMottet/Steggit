@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -79,7 +80,8 @@ public class InsertMessage extends AppCompatActivity {
 
                     byte[] encodedText = TextEncryption.encrypt(message, passphrase);
                     img.addText(encodedText);
-                    img.saveFile(addSuffix(filename, "_stegged"));
+                    String fileSaved = img.saveFile(addSuffix(filename, "_stegged"));
+                    MediaScannerConnection.scanFile(InsertMessage.this, new String[] { fileSaved }, new String[] { "image/png" }, null);
                     progress.dismiss();
                     InsertMessage.this.runOnUiThread(new Runnable() {
                         public void run() {
@@ -118,13 +120,12 @@ public class InsertMessage extends AppCompatActivity {
 
                     byte[] encodedText = TextEncryption.encrypt(message, passphrase);
                     img.addText(encodedText);
-                    String newFilename = addSuffix(filename, "_stegged");
-                    img.saveFile(newFilename);
+                    String savedFile = img.saveFile(addSuffix(filename, "_stegged"));
                     progress.dismiss();
 
                     // Open share menu
                     Intent shareIntent = new Intent();
-                    Uri uri = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), newFilename));
+                    Uri uri = Uri.fromFile(new File(savedFile));
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                     shareIntent.setType("image/png");

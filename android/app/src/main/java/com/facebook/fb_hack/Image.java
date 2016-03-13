@@ -46,7 +46,7 @@ public class Image {
 
     /** Save a new image file
      */
-    public void saveFile(String filename) {
+    public String saveFile(String filename) {
         // Save raw image data from imageData
         ByteBuffer buffer = ByteBuffer.wrap(imageData);
         image.copyPixelsFromBuffer(buffer);
@@ -59,8 +59,10 @@ public class Image {
                 System.err.println("Oooops!");
             out.flush();
             out.close();
+            return file.getPath();
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 

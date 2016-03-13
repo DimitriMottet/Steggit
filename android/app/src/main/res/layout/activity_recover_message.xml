@@ -36,7 +36,8 @@
         android:layout_weight="3"
         android:inputType="none"
         android:ems="10"
-        android:id="@+id/editPlainText" />
+        android:id="@+id/editPlainText"
+        android:focusable="false" />
 
     <Button
         android:layout_width="match_parent"

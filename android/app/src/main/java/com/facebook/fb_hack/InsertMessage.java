@@ -39,6 +39,7 @@ public class InsertMessage extends AppCompatActivity {
         encodeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 encodeMessageOnImage();
+                startShare();
             }
         });
     }
@@ -76,6 +77,15 @@ public class InsertMessage extends AppCompatActivity {
                 }
             }).start();
         }
+    }
+
+    // Launch share message activity
+    private void startShare(){
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, loadedImageUri);
+        shareIntent.setType("image/*");
+        startActivity(Intent.createChooser(shareIntent, "Share to..."));
     }
 
     private String getRealPathFromURI(Uri contentUri) {

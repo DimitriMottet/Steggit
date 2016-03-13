@@ -53,7 +53,7 @@ public class RecoverMessage extends AppCompatActivity {
                 @Override
                 public void run() {
                     String passphrase = editPassphrase.getText().toString();
-                    String filename = getRealPathFromURI(loadedImageUri);
+                    String filename = FileUtils.getPath(RecoverMessage.this, loadedImageUri);
 
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inDither = false;
@@ -73,20 +73,6 @@ public class RecoverMessage extends AppCompatActivity {
                 }
             }).start();
         }
-    }
-
-    private String getRealPathFromURI(Uri contentUri) {
-        if (contentUri.getPath().startsWith("/storage"))
-            return contentUri.getPath();
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(contentUri, filePathColumn, null, null, null);
-        String realPath = null;
-        if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            realPath = cursor.getString(columnIndex);
-        }
-        cursor.close();
-        return realPath;
     }
 
 }

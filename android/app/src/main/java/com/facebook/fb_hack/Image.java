@@ -63,7 +63,7 @@ public class Image {
             e.printStackTrace();
         }
     }
-    
+
 
     /** Add bytes to bytes at a certain offset
      */

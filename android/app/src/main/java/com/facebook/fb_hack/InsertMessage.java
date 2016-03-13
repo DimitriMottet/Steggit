@@ -3,12 +3,10 @@ package com.facebook.fb_hack;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -70,7 +68,7 @@ public class InsertMessage extends AppCompatActivity {
                 public void run() {
                     String message = editMessage.getText().toString();
                     String passphrase = editPassphrase.getText().toString();
-                    String filename = getRealPathFromURI(loadedImageUri);
+                    String filename = FileUtils.getPath(InsertMessage.this, loadedImageUri);
 
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inDither = false;
@@ -83,6 +81,7 @@ public class InsertMessage extends AppCompatActivity {
                     img.addText(encodedText);
                     img.saveFile(addSuffix(filename, "_stegged"));
                     progress.dismiss();
+                    Toast.makeText(InsertMessage.this, "Saved to Pictures folder", Toast.LENGTH_SHORT).show();
                 }
             }).start();
         }
@@ -104,7 +103,7 @@ public class InsertMessage extends AppCompatActivity {
                 public void run() {
                     String message = editMessage.getText().toString();
                     String passphrase = editPassphrase.getText().toString();
-                    String filename = getRealPathFromURI(loadedImageUri);
+                    String filename = FileUtils.getPath(InsertMessage.this, loadedImageUri);
 
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inDither = false;
@@ -130,20 +129,6 @@ public class InsertMessage extends AppCompatActivity {
                 }
             }).start();
         }
-    }
-
-    private String getRealPathFromURI(Uri contentUri) {
-        if (contentUri.getPath().startsWith("/storage"))
-            return contentUri.getPath();
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(contentUri, filePathColumn, null, null, null);
-        String realPath = null;
-        if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            realPath = cursor.getString(columnIndex);
-        }
-        cursor.close();
-        return realPath;
     }
 
     private String addSuffix(String filename, String suffix) {

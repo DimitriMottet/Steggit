@@ -1,10 +1,8 @@
 package com.facebook.fb_hack;
 
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 public class TextEncryption {
@@ -13,9 +11,11 @@ public class TextEncryption {
         try {
             Key key = generateKey(stringKey);
             Cipher c = Cipher.getInstance("AES");
+            System.out.println("Antoine");
             c.init(Cipher.ENCRYPT_MODE, key);
             return c.doFinal(valueToEnc.getBytes());
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -32,8 +32,7 @@ public class TextEncryption {
         }
     }
 
-    private static Key generateKey(String stringKey) throws Exception
-    {
+    private static Key generateKey(String stringKey) throws Exception {
         byte[] keyValue = stringKey.getBytes();
         Key key = new SecretKeySpec(keyValue, "AES");
         return key;

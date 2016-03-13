@@ -1,7 +1,7 @@
 package com.facebook.fb_hack;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.Environment;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,22 +9,18 @@ import java.io.IOException;
 
 public class Image {
 
-    String filename;
-    String extension;
     Bitmap image;
     int width, height;
     byte imageData[];
 
-    public Image(String filename) {
-        this.filename = filename;
-        this.extension = getFileExtension(filename);
-        this.image = BitmapFactory.decodeFile(filename);
+    public Image(Bitmap bitmap) {
+        this.image = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.imageData = new byte[4 * width * height];
         getBytesFromBitmap();
     }
-
+/*
     private String getFileExtension(String fileName) {
         String ext = "";
         int mode = 0;
@@ -38,40 +34,55 @@ public class Image {
         }
         return ext;
     }
-
+*/
     /** Add text to the buffered image
-     * @param s
      */
-    public void addText(String s) {
+    public void addText(byte[] text) {
         // Convert to byte arrays
-        byte text[] = s.getBytes();
         byte length[]  = bitConversion(text.length);
         // Add the text
-        addBytes(imageData, length, 0); // 0 = first position
-        addBytes(imageData, text, 32); //  4 bytes of space for length: 4bytes*8bit = 32 bits
+        addBytes(length, 0); // 0 = first position
+        addBytes(text, 32); //  4 bytes of space for length: 4bytes*8bit = 32 bits
     }
 
     /** Get the text from buffered image
      */
-    public String getText() {
-        return new String(getEncodedBytes(imageData));
+    public byte[] getText() {
+        return getEncodedBytes(imageData);
     }
+
+    /** Save a new image file
+     */
+    public void saveFile(String filename) {
+        getBitmapFromBytes();
+        try {
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filename);
+            FileOutputStream out = new FileOutputStream(file);
+            if (!image.compress(Bitmap.CompressFormat.PNG, 0, out))
+                System.err.println("Oooops!");
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /** Add bytes to bytes at a certain offset
      */
-    private static byte[] addBytes(byte[] init, byte[] toAdd, int offset) {
-        if (toAdd.length + offset > init.length)
-            return null;
+    private void addBytes(byte[] toAdd, int offset) {
+        if (toAdd.length + offset > imageData.length) {
+            System.err.println("Picture too small");
+            return;
+        }
 
-        byte newBytes[] = init;
         for(int i = 0; i < toAdd.length; ++i) {
             int add = toAdd[i];
             for (int bit = 7; bit >= 0; --bit, ++offset) {
                 int b = (add >>> bit) & 1;
-                newBytes[offset] = (byte)((init[offset] & 0xFE) | b);
+                imageData[offset] = (byte)((imageData[offset] & 0xFE) | b);
             }
         }
-        return init;
     }
 
     /** Get the added bytes
@@ -105,6 +116,17 @@ public class Image {
         }
     }
 
+    private void getBitmapFromBytes() {
+        int pixels[] = new int[width * height];
+        for (int i = 0; i < width * height; i++) {
+            pixels[i]   = ((imageData[4*i]   & 0xFF) << 24)
+                        | ((imageData[4*i+1] & 0xFF) << 16)
+                        | ((imageData[4*i+2] & 0xFF) << 8 )
+                        | ((imageData[4*i+3] & 0xFF)      );
+        }
+        image.setPixels(pixels, 0, width, 0, 0, width, height);
+    }
+
     /** Convert an integer into bytes
      */
     private byte[] bitConversion(int i) {
@@ -113,18 +135,6 @@ public class Image {
         byte byte1 = (byte)((i & 0x0000FF00) >>> 8 );
         byte byte0 = (byte)((i & 0x000000FF)       );
         return new byte[]{byte3, byte2, byte1, byte0};
-    }
-
-    /** Save a new image file
-     */
-    public void saveFile(String filename) {
-        try {
-            FileOutputStream out = new FileOutputStream(filename);
-            image.compress(Bitmap.CompressFormat.PNG, 0, out);
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -2,11 +2,15 @@ package com.facebook.fb_hack;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+
+import java.io.IOException;
 
 public class RecoverMessage extends AppCompatActivity {
 
@@ -26,7 +30,7 @@ public class RecoverMessage extends AppCompatActivity {
             imgView.setImageURI(loadedImageUri);
         }
 
-        final Button encodeButton = (Button) findViewById(R.id.buttonInsert);
+        final Button encodeButton = (Button) findViewById(R.id.buttonRecover);
         encodeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recoverMessageFromImage();
@@ -35,7 +39,24 @@ public class RecoverMessage extends AppCompatActivity {
     }
 
     private void recoverMessageFromImage() {
+        final EditText editPassphrase = (EditText) findViewById(R.id.editPassphrase);
+        final EditText editPlainText = (EditText) findViewById(R.id.editPlainText);
+        String passphrase = editPassphrase.getText().toString();
+        passphrase = "kkkkkkkkkkkkkkkk";
 
+        try {
+            System.out.println("OK");
+            Image img = new Image(MediaStore.Images.Media.getBitmap(this.getContentResolver(), loadedImageUri));
+            System.out.println("OK");
+            byte[] encodedText = img.getText();
+            System.out.println("OK");
+            String plaintext = TextEncryption.decrypt(encodedText, passphrase);
+            System.out.println("OK");
+            editPlainText.setText(plaintext);
+            System.out.println("OK");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

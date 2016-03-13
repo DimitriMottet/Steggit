@@ -2,12 +2,15 @@ package com.facebook.fb_hack;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import java.io.IOException;
 
 public class InsertMessage extends AppCompatActivity {
 
@@ -40,8 +43,16 @@ public class InsertMessage extends AppCompatActivity {
         final EditText editPassphrase = (EditText) findViewById(R.id.editPassphrase);
         String message = editMessage.getText().toString();
         String passphrase = editPassphrase.getText().toString();
+        passphrase = "kkkkkkkkkkkkkkkk";
 
         byte[] encodedText = TextEncryption.encrypt(message, passphrase);
+        try {
+            Image img = new Image(MediaStore.Images.Media.getBitmap(this.getContentResolver(), loadedImageUri));
+            img.addText(encodedText);
+            img.saveFile("testfile.png");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
